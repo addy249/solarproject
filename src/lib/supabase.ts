@@ -2,6 +2,8 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+const meetingInviteFunctionName =
+  (import.meta.env.VITE_MEETING_INVITE_FUNCTION as string | undefined) || "send-meeting-invite";
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
@@ -50,7 +52,7 @@ export async function saveLead(lead: LeadInsert) {
     const { error } = await supabase.from("leads").insert({ id: leadId, ...lead });
     if (error) throw error;
 
-    const { data: inviteData, error: inviteError } = await supabase.functions.invoke("send-meeting-invite", {
+    const { data: inviteData, error: inviteError } = await supabase.functions.invoke(meetingInviteFunctionName, {
       body: { leadId },
     });
 

@@ -23,6 +23,12 @@ npm run dev
 4. Add your project URL and anon key.
 5. Create an admin user in Supabase Auth for the lead admin modal.
 
+If your deployed Edge Function URL ends with a different slug, add it to `.env`:
+
+```bash
+VITE_MEETING_INVITE_FUNCTION=smooth-api
+```
+
 Anonymous visitors can insert leads. Authenticated users can read and manage leads.
 
 ## Email meeting invites
