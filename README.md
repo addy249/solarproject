@@ -31,6 +31,22 @@ VITE_MEETING_INVITE_FUNCTION=smooth-api
 
 Anonymous visitors can insert leads. Authenticated users can read and manage leads.
 
+## Product catalogue
+
+Customer-facing product cards and quote form product chips are loaded from Supabase table `product_categories`.
+
+If the website shows `Product catalogue: local fallback`, run this file in the Supabase SQL editor:
+
+```text
+supabase/migrations/0004_product_catalog_seed.sql
+```
+
+After redeploying the website, the form should show:
+
+```text
+Product catalogue: loaded from Supabase
+```
+
 ## Email meeting invites
 
 The enquiry form now creates a meeting request and calls the Supabase Edge Function at `supabase/functions/send-meeting-invite`.

@@ -513,6 +513,17 @@ textarea {
   padding: clamp(24px, 4vw, 42px);
 }
 
+.catalog-note {
+  background: #eef6f2;
+  border: 1px solid #cfe1d8;
+  border-radius: var(--radius);
+  color: var(--green-dark);
+  font-size: 0.9rem;
+  font-weight: 800;
+  margin: 0;
+  padding: 10px 12px;
+}
+
 .field-pair > label {
   flex: 1;
 }

@@ -43,7 +43,28 @@ export type MeetingRequestRecord = {
   created_at?: string;
 };
 
+export type ProductCategoryRecord = {
+  id?: string;
+  slug: string;
+  name: string;
+  description: string;
+  typical_incentive_note: string;
+  created_at?: string;
+};
+
 const localKey = "green-grid-energy-leads";
+
+export async function getProductCategories() {
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from("product_categories")
+    .select("id, slug, name, description, typical_incentive_note, created_at")
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+  return (data || []) as ProductCategoryRecord[];
+}
 
 export async function saveLead(lead: LeadInsert) {
   const leadId = crypto.randomUUID();

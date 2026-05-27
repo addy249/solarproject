@@ -1,20 +1,57 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
+  AirVent,
   Check,
   ChevronDown,
   CalendarDays,
+  Droplets,
   ExternalLink,
   Menu,
   Phone,
   ShieldCheck,
+  SunMedium,
   X,
 } from "lucide-react";
-import { getLocalLeads, isSupabaseConfigured, saveLead, supabase, type LeadRecord } from "./lib/supabase";
+import {
+  getLocalLeads,
+  getProductCategories,
+  isSupabaseConfigured,
+  saveLead,
+  supabase,
+  type LeadRecord,
+  type ProductCategoryRecord,
+} from "./lib/supabase";
 import { metrics, processSteps, services, subsidyPrograms } from "./data/content";
 
 const states = ["VIC", "NSW", "QLD", "SA", "WA", "TAS", "ACT", "NT"];
-const serviceOptions = services.map((service) => service.title);
+const productIcons = {
+  "solar-pv": SunMedium,
+  "heat-pump-hot-water": Droplets,
+  "reverse-cycle-aircon": AirVent,
+};
+
+type ProductDisplay = {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  detail: string;
+  estimate: string;
+  icon: typeof SunMedium;
+};
+
+function productFromDatabase(record: ProductCategoryRecord): ProductDisplay {
+  return {
+    id: record.slug,
+    slug: record.slug,
+    title: record.name,
+    summary: record.description,
+    detail: "Fetched from the Supabase product catalogue.",
+    estimate: record.typical_incentive_note,
+    icon: productIcons[record.slug as keyof typeof productIcons] || ShieldCheck,
+  };
+}
 
 const initialForm = {
   full_name: "",
@@ -43,6 +80,35 @@ function App() {
   const [adminPassword, setAdminPassword] = useState("");
   const [adminLeads, setAdminLeads] = useState<AdminLead[]>([]);
   const [adminMessage, setAdminMessage] = useState("");
+  const [products, setProducts] = useState<ProductDisplay[]>(services.map((service) => ({ ...service, slug: service.id })));
+  const [productsSource, setProductsSource] = useState<"database" | "fallback">("fallback");
+
+  const serviceOptions = products.map((service) => service.title);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadProducts() {
+      try {
+        const productRows = await getProductCategories();
+        if (!active || productRows.length === 0) return;
+
+        setProducts(productRows.map(productFromDatabase));
+        setProductsSource("database");
+        setForm((current) => ({
+          ...current,
+          services: current.services.length ? current.services : [productRows[0].name],
+        }));
+      } catch (error) {
+        console.warn("Using fallback products because Supabase product loading failed.", error);
+      }
+    }
+
+    loadProducts();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const visiblePrograms = useMemo(() => {
     return subsidyPrograms.filter((program) => program.scope === "National" || program.scope === selectedState);
@@ -197,7 +263,7 @@ function App() {
             </p>
           </div>
           <div className="service-grid">
-            {services.map((service) => {
+            {products.map((service) => {
               const Icon = service.icon;
               return (
                 <article className="service-card" key={service.id}>
@@ -300,6 +366,9 @@ function App() {
               </div>
             </div>
             <form className="quote-form" onSubmit={handleSubmit}>
+              <p className="catalog-note">
+                Product catalogue: {productsSource === "database" ? "loaded from Supabase" : "local fallback"}
+              </p>
               <div className="field-pair">
                 <label>
                   Full name
