@@ -24,21 +24,67 @@ export type LeadInsert = {
   estimated_rebate_focus: string;
 };
 
+export type LeadRecord = LeadInsert & {
+  id: string;
+  created_at?: string;
+  status?: string;
+  meeting_requests?: MeetingRequestRecord[];
+};
+
+export type MeetingRequestRecord = {
+  id: string;
+  lead_id: string;
+  booking_url: string;
+  email_status: "pending" | "sent" | "failed" | "pending_config";
+  email_error?: string | null;
+  sent_at?: string | null;
+  created_at?: string;
+};
+
 const localKey = "green-grid-energy-leads";
 
 export async function saveLead(lead: LeadInsert) {
+  const leadId = crypto.randomUUID();
+
   if (supabase) {
-    const { error } = await supabase.from("leads").insert(lead);
+    const { error } = await supabase.from("leads").insert({ id: leadId, ...lead });
     if (error) throw error;
-    return { mode: "supabase" as const };
+
+    const { data: inviteData, error: inviteError } = await supabase.functions.invoke("send-meeting-invite", {
+      body: { leadId },
+    });
+
+    return {
+      mode: "supabase" as const,
+      leadId,
+      inviteStatus: inviteError ? "failed" : (inviteData?.emailStatus as string | undefined),
+      inviteError: inviteError?.message,
+    };
   }
 
   const existing = JSON.parse(localStorage.getItem(localKey) || "[]");
+  const bookingUrl = import.meta.env.VITE_BOOKING_URL || "Add VITE_BOOKING_URL to send a real booking link";
   localStorage.setItem(
     localKey,
-    JSON.stringify([{ id: crypto.randomUUID(), created_at: new Date().toISOString(), ...lead }, ...existing]),
+    JSON.stringify([
+      {
+        id: leadId,
+        created_at: new Date().toISOString(),
+        meeting_requests: [
+          {
+            id: crypto.randomUUID(),
+            lead_id: leadId,
+            booking_url: bookingUrl,
+            email_status: "pending_config",
+            created_at: new Date().toISOString(),
+          },
+        ],
+        ...lead,
+      },
+      ...existing,
+    ]),
   );
-  return { mode: "local" as const };
+  return { mode: "local" as const, leadId, inviteStatus: "pending_config" };
 }
 
 export async function getLocalLeads() {

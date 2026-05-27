@@ -25,6 +25,38 @@ npm run dev
 
 Anonymous visitors can insert leads. Authenticated users can read and manage leads.
 
+## Email meeting invites
+
+The enquiry form now creates a meeting request and calls the Supabase Edge Function at `supabase/functions/send-meeting-invite`.
+
+Run the second migration after the original schema:
+
+```bash
+supabase db push
+```
+
+Or paste this file into the Supabase SQL editor:
+
+```text
+supabase/migrations/0002_meeting_invites.sql
+```
+
+Create a booking page in Calendly, Cal.com or another scheduler, then configure Supabase secrets:
+
+```bash
+supabase secrets set BOOKING_URL=https://calendly.com/your-company/energy-consult
+supabase secrets set RESEND_API_KEY=your_resend_api_key
+supabase secrets set MEETING_FROM_EMAIL="Green Grid Energy <hello@yourdomain.com>"
+```
+
+Deploy the Edge Function:
+
+```bash
+supabase functions deploy send-meeting-invite
+```
+
+When a visitor submits an enquiry, the app saves the lead, creates a `meeting_requests` row, and emails the booking link. If `RESEND_API_KEY` or `BOOKING_URL` is missing, the request is still saved with `email_status = pending_config`.
+
 ## Subsidy notes
 
 The website uses conservative eligibility language because incentives depend on state, postcode, supplier, installer accreditation and funding availability. Source links point to energy.gov.au and the Clean Energy Regulator pathway for current program details.

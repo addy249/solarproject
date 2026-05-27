@@ -3,13 +3,14 @@ import {
   ArrowRight,
   Check,
   ChevronDown,
+  CalendarDays,
   ExternalLink,
   Menu,
   Phone,
   ShieldCheck,
   X,
 } from "lucide-react";
-import { getLocalLeads, isSupabaseConfigured, saveLead, supabase, type LeadInsert } from "./lib/supabase";
+import { getLocalLeads, isSupabaseConfigured, saveLead, supabase, type LeadRecord } from "./lib/supabase";
 import { metrics, processSteps, services, subsidyPrograms } from "./data/content";
 
 const states = ["VIC", "NSW", "QLD", "SA", "WA", "TAS", "ACT", "NT"];
@@ -29,7 +30,7 @@ const initialForm = {
   notes: "",
 };
 
-type LocalLead = LeadInsert & { id?: string; created_at?: string };
+type AdminLead = Partial<LeadRecord> & { id?: string; created_at?: string };
 
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -40,7 +41,7 @@ function App() {
   const [adminOpen, setAdminOpen] = useState(false);
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
-  const [adminLeads, setAdminLeads] = useState<LocalLead[]>([]);
+  const [adminLeads, setAdminLeads] = useState<AdminLead[]>([]);
   const [adminMessage, setAdminMessage] = useState("");
 
   const visiblePrograms = useMemo(() => {
@@ -69,10 +70,19 @@ function App() {
     try {
       const result = await saveLead({ ...form, estimated_rebate_focus });
       setStatus("saved");
+      const inviteNote =
+        result.inviteStatus === "sent"
+          ? " We also emailed a booking link so they can choose a meeting time."
+          : result.inviteStatus === "pending_config"
+            ? " Meeting email is ready, but email provider secrets and booking URL still need to be configured."
+            : result.inviteStatus === "failed"
+              ? " The enquiry saved, but the meeting email could not be sent yet."
+              : " Meeting invite request created.";
+
       setMessage(
         result.mode === "supabase"
-          ? "Thanks. Your request has been saved and the team can follow up from Supabase."
-          : "Thanks. Demo mode saved this request locally. Add Supabase keys to store live leads.",
+          ? `Thanks. Your request has been saved in Supabase.${inviteNote}`
+          : `Thanks. Demo mode saved this request locally.${inviteNote}`,
       );
       setForm(initialForm);
     } catch (error) {
@@ -99,7 +109,10 @@ function App() {
       }
     }
 
-    const { data, error } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
+    const { data, error } = await supabase
+      .from("leads")
+      .select("*, meeting_requests(*)")
+      .order("created_at", { ascending: false });
     if (error) {
       setAdminMessage(error.message);
       return;
@@ -277,6 +290,14 @@ function App() {
                   <small>Based on selected upgrade categories. Final savings depend on site and usage.</small>
                 </div>
               </div>
+              <div className="estimate-box">
+                <CalendarDays size={24} />
+                <div>
+                  <span>Next step</span>
+                  <strong>Email booking link</strong>
+                  <small>After enquiry, customers receive your calendar page and choose a meeting time.</small>
+                </div>
+              </div>
             </div>
             <form className="quote-form" onSubmit={handleSubmit}>
               <div className="field-pair">
@@ -437,6 +458,14 @@ function App() {
                   <small>
                     {lead.state} {lead.postcode} | {lead.services?.join(", ")}
                   </small>
+                  {lead.meeting_requests?.[0] && (
+                    <small>
+                      Meeting email: {lead.meeting_requests[0].email_status} |{" "}
+                      <a href={lead.meeting_requests[0].booking_url} target="_blank" rel="noreferrer">
+                        booking link
+                      </a>
+                    </small>
+                  )}
                 </article>
               ))}
             </div>
