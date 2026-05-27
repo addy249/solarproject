@@ -28,3 +28,4 @@ Anonymous visitors can insert leads. Authenticated users can read and manage lea
 ## Subsidy notes
 
 The website uses conservative eligibility language because incentives depend on state, postcode, supplier, installer accreditation and funding availability. Source links point to energy.gov.au and the Clean Energy Regulator pathway for current program details.
+# solarproject
