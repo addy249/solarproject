@@ -10,6 +10,7 @@ import {
   Menu,
   Phone,
   ShieldCheck,
+  Star,
   SunMedium,
   X,
 } from "lucide-react";
@@ -22,7 +23,7 @@ import {
   type LeadRecord,
   type ProductCategoryRecord,
 } from "./lib/supabase";
-import { metrics, processSteps, services, subsidyPrograms } from "./data/content";
+import { acquisitionBenefits, metrics, processSteps, services, subsidyPrograms } from "./data/content";
 
 const states = ["VIC", "NSW", "QLD", "SA", "WA", "TAS", "ACT", "NT"];
 const productIcons = {
@@ -142,7 +143,9 @@ function App() {
           : result.inviteStatus === "pending_config"
             ? " Meeting email is ready, but email provider secrets and booking URL still need to be configured."
             : result.inviteStatus === "failed"
-              ? " The enquiry saved, but the meeting email could not be sent yet."
+              ? ` The enquiry saved, but the meeting email could not be sent yet${
+                  result.inviteError ? `: ${result.inviteError}` : "."
+                }`
               : " Meeting invite request created.";
 
       setMessage(
@@ -222,20 +225,34 @@ function App() {
           <img src="/assets/hero-home-energy.png" alt="Australian home with solar, heat pump and air conditioning" />
           <div className="hero-overlay" />
           <div className="hero-content">
-            <p className="eyebrow">Solar, heat pump hot water and reverse-cycle aircon</p>
-            <h1>Home electrification with subsidy checks built in.</h1>
+            <p className="eyebrow">Government subsidy checks for Australian energy upgrades</p>
+            <h1>Cut power bills before the next season hits.</h1>
             <p className="hero-copy">
-              Plan a cleaner, cheaper home upgrade with accredited products, practical quote guidance and current
-              Australian government incentive pathways.
+              Get a subsidy-aware plan for solar, heat pump hot water and reverse-cycle aircon, then book a consultation
+              from the email link sent after your enquiry.
             </p>
             <div className="hero-actions">
               <a className="primary-button" href="#quote">
-                Get my eligibility check
+                Check my rebate options
                 <ArrowRight size={18} />
               </a>
               <a className="secondary-button" href="#subsidies">
-                View subsidy programs
+                See available incentives
               </a>
+            </div>
+            <div className="hero-proof" aria-label="Customer reassurance">
+              <span>
+                <Star size={16} />
+                No-obligation eligibility check
+              </span>
+              <span>
+                <ShieldCheck size={16} />
+                Supabase-tracked enquiry
+              </span>
+              <span>
+                <CalendarDays size={16} />
+                Calendar link by email
+              </span>
             </div>
           </div>
         </section>
@@ -253,13 +270,32 @@ function App() {
           })}
         </section>
 
+        <section className="acquisition-band" aria-label="Why customers enquire">
+          <div className="acquisition-copy">
+            <p className="eyebrow">Why homeowners enquire</p>
+            <h2>Stop guessing which upgrade pays first.</h2>
+          </div>
+          <div className="benefit-grid">
+            {acquisitionBenefits.map((benefit) => {
+              const Icon = benefit.icon;
+              return (
+                <article className="benefit-item" key={benefit.title}>
+                  <Icon size={24} />
+                  <h3>{benefit.title}</h3>
+                  <p>{benefit.text}</p>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
         <section id="services" className="section services-section">
           <div className="section-heading">
-            <p className="eyebrow">What we install</p>
-            <h2>Three upgrades, one coordinated plan</h2>
+            <p className="eyebrow">Products loaded from Supabase</p>
+            <h2>Choose the upgrade path that fits your home</h2>
             <p>
-              Customers can compare solar, hot water and air conditioning in one place instead of juggling three
-              separate trades and rebate conversations.
+              Compare the main home energy upgrades in one place and let the enquiry form pass your product choices
+              into the lead database.
             </p>
           </div>
           <div className="service-grid">
@@ -321,8 +357,8 @@ function App() {
 
         <section className="section process-section">
           <div className="section-heading">
-            <p className="eyebrow">MVP workflow</p>
-            <h2>From inquiry to installation-ready quote</h2>
+            <p className="eyebrow">Conversion flow</p>
+            <h2>From enquiry to booked consultation</h2>
           </div>
           <div className="process-grid">
             {processSteps.map((step, index) => {
@@ -342,11 +378,11 @@ function App() {
         <section id="quote" className="section quote-section">
           <div className="quote-panel">
             <div className="quote-copy">
-              <p className="eyebrow">Instant lead capture</p>
-              <h2>Request an upgrade plan</h2>
+              <p className="eyebrow">Free eligibility check</p>
+              <h2>Find out what your home may qualify for</h2>
               <p>
-                The form saves directly to Supabase when environment keys are configured. In demo mode it stores leads
-                locally so the MVP can be tested straight away.
+                Tell us what you want to upgrade and we will send a calendar link so you can choose a consultation
+                time. Your enquiry is saved in Supabase for follow-up.
               </p>
               <div className="estimate-box">
                 <ShieldCheck size={24} />

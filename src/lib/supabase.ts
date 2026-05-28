@@ -81,7 +81,7 @@ export async function saveLead(lead: LeadInsert) {
       mode: "supabase" as const,
       leadId,
       inviteStatus: inviteError ? "failed" : (inviteData?.emailStatus as string | undefined),
-      inviteError: inviteError?.message,
+      inviteError: inviteError?.message || (inviteData?.error as string | undefined),
     };
   }
 

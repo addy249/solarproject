@@ -2,10 +2,14 @@ import {
   AirVent,
   BadgeDollarSign,
   BatteryCharging,
+  CalendarCheck,
+  ClipboardCheck,
   Droplets,
   Home,
+  PiggyBank,
   ShieldCheck,
   SunMedium,
+  TimerReset,
   Zap,
 } from "lucide-react";
 
@@ -86,29 +90,47 @@ export const subsidyPrograms = [
 
 export const processSteps = [
   {
-    title: "Eligibility scan",
+    title: "Check rebates",
     icon: ShieldCheck,
-    text: "We screen ownership, postcode, existing equipment and preferred upgrade against national and state programs.",
+    text: "We screen your postcode, home details and preferred products against available national and state programs.",
   },
   {
-    title: "Home energy plan",
+    title: "Design the plan",
     icon: Home,
-    text: "You get a practical upgrade path covering solar, hot water and heating or cooling priorities.",
+    text: "You get a practical solar, hot water and heating or cooling pathway based on the home you actually live in.",
   },
   {
-    title: "Quote and paperwork",
+    title: "Separate incentives",
     icon: BadgeDollarSign,
-    text: "The quote separates system costs, estimated incentives, finance pathways and installer requirements.",
+    text: "The quote separates equipment costs, expected incentives, finance options and installer requirements.",
   },
   {
-    title: "Install coordination",
+    title: "Book a consult",
     icon: Zap,
-    text: "Accredited installers complete the work and collect the evidence required by the relevant scheme.",
+    text: "A booking link is emailed after enquiry so you can choose a time that suits you.",
   },
 ];
 
 export const metrics = [
   { label: "Upgrade categories", value: "3", icon: BatteryCharging },
   { label: "States screened", value: "8", icon: Home },
-  { label: "Lead response target", value: "1 day", icon: Zap },
+  { label: "Consult booking link", value: "Instant", icon: CalendarCheck },
+];
+
+export const acquisitionBenefits = [
+  {
+    title: "Lower upfront cost",
+    icon: PiggyBank,
+    text: "We check available subsidies and certificate discounts before you make a buying decision.",
+  },
+  {
+    title: "One home energy plan",
+    icon: ClipboardCheck,
+    text: "Solar, heat pump hot water and reverse-cycle aircon are compared together instead of as separate quotes.",
+  },
+  {
+    title: "Fast next step",
+    icon: TimerReset,
+    text: "Submit the enquiry and receive a calendar link to book a consultation while the details are fresh.",
+  },
 ];

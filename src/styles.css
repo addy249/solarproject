@@ -143,8 +143,8 @@ textarea {
 
 .hero-content {
   color: var(--white);
-  max-width: 760px;
-  padding: 22vh clamp(18px, 7vw, 96px) 9vh;
+  max-width: 820px;
+  padding: 18vh clamp(18px, 7vw, 96px) 8vh;
   position: relative;
   z-index: 1;
 }
@@ -195,6 +195,33 @@ h3 {
 .admin-form {
   display: flex;
   gap: 12px;
+}
+
+.hero-proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 26px;
+  max-width: 720px;
+}
+
+.hero-proof span {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.9);
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 800;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px 12px;
+}
+
+.hero-proof svg {
+  color: var(--lime);
+  flex: 0 0 auto;
 }
 
 .primary-button,
@@ -258,6 +285,49 @@ h3 {
 
 .metric span {
   color: rgba(255, 255, 255, 0.72);
+}
+
+.acquisition-band {
+  align-items: stretch;
+  background: #f1f5ea;
+  display: grid;
+  gap: 28px;
+  grid-template-columns: minmax(260px, 0.72fr) minmax(320px, 1.28fr);
+  padding: clamp(48px, 7vw, 84px) clamp(18px, 5vw, 72px);
+}
+
+.acquisition-copy {
+  align-self: center;
+  max-width: 520px;
+}
+
+.acquisition-copy h2 {
+  margin-bottom: 0;
+}
+
+.benefit-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.benefit-item {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  min-height: 210px;
+  padding: 22px;
+}
+
+.benefit-item svg {
+  color: var(--green);
+  margin-bottom: 24px;
+}
+
+.benefit-item p {
+  color: var(--muted);
+  line-height: 1.55;
+  margin-bottom: 0;
 }
 
 .section {
@@ -686,11 +756,13 @@ textarea {
   .service-grid,
   .process-grid,
   .quote-panel,
-  .subsidy-layout {
+  .subsidy-layout,
+  .acquisition-band {
     grid-template-columns: 1fr;
   }
 
-  .process-grid {
+  .process-grid,
+  .benefit-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -735,6 +807,11 @@ textarea {
     padding-top: 140px;
   }
 
+  .hero-proof {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
   .hero-actions,
   .field-pair,
   .admin-form,
@@ -748,7 +825,8 @@ textarea {
   }
 
   .metrics-band,
-  .process-grid {
+  .process-grid,
+  .benefit-grid {
     grid-template-columns: 1fr;
   }
 
